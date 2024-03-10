@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- ChangeSet for User -->
+    <changeSet id="1" author="christian">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- ChangeSet for Client -->
+    <changeSet id="2" author="christian">
+        <createTable tableName="client">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight" type="double"/>
+            <column name="height" type="double"/>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_client_user"
+                                 baseTableName="client"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet for ClientRecord -->
+    <changeSet id="3" author="christian">
+        <createTable tableName="client_record">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="weight" type="double"/>
+            <column name="height" type="double"/>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_clientrecord_client"
+                                 baseTableName="client_record"
+                                 baseColumnNames="client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet for Workout -->
+    <changeSet id="4" author="christian">
+        <createTable tableName="workout">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_workout_client"
+                                 baseTableName="workout"
+                                 baseColumnNames="client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet for Exercise -->
+    <changeSet id="5" author="christian">
+        <createTable tableName="exercise">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body_part" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_exercise_client"
+                                 baseTableName="exercise"
+                                 baseColumnNames="client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet for WorkoutExercise -->
+    <changeSet id="6" author="christian">
+        <createTable tableName="workout_exercise">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="exercise_load" type="double" defaultValue="0.0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="workout_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exercise_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_workoutexercise_workout"
+                                 baseTableName="workout_exercise"
+                                 baseColumnNames="workout_id"
+                                 referencedTableName="workout"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fk_workoutexercise_exercise"
+                                 baseTableName="workout_exercise"
+                                 baseColumnNames="exercise_id"
+                                 referencedTableName="exercise"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- ChangeSet for ClientExerciseRecord -->
+    <changeSet id="7" author="christian">
+        <createTable tableName="client_exercise_record">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="exercise_load" type="double" defaultValue="0.0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exercise_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_clientexerciserecord_client"
+                                 baseTableName="client_exercise_record"
+                                 baseColumnNames="client_id"
+                                 referencedTableName="client"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fk_clientexerciserecord_exercise"
+                                 baseTableName="client_exercise_record"
+                                 baseColumnNames="exercise_id"
+                                 referencedTableName="exercise"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="8" author="christian">
+        <loadData
+                file="db/data/exercises.csv"
+                separator=","
+                tableName="exercise"
+                usePreparedStatements="true">
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>
